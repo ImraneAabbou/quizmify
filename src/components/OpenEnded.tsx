@@ -46,7 +46,8 @@ const OpenEnded = ({ game }: Props) => {
   const { mutate: checkAnswer, isLoading: isChecking } = useMutation({
     mutationFn: async () => {
       let filledAnswer = blankAnswer;
-      document.querySelectorAll("#user-blank-input").forEach((input) => {
+      document.querySelectorAll("#user-blank-input").forEach((i) => {
+        let input = i as HTMLInputElement
         filledAnswer = filledAnswer.replace("_____", input.value);
         input.value = "";
       });
