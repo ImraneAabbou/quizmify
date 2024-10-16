@@ -30,7 +30,7 @@ const MCQ = ({ game }: Props) => {
     correct_answers: 0,
     wrong_answers: 0,
   });
-  const [selectedChoice, setSelectedChoice] = React.useState<number>(0);
+  const [selectedChoice, setSelectedChoice] = React.useState<number | null>(null);
   const [now, setNow] = React.useState(new Date());
 
   const currentQuestion = React.useMemo(() => {
@@ -48,7 +48,7 @@ const MCQ = ({ game }: Props) => {
     mutationFn: async () => {
       const payload: z.infer<typeof checkAnswerSchema> = {
         questionId: currentQuestion.id,
-        userInput: options[selectedChoice],
+        userInput: options[selectedChoice as number],
       };
       const response = await axios.post(`/api/checkAnswer`, payload);
       return response.data;
@@ -77,6 +77,8 @@ const MCQ = ({ game }: Props) => {
   const handleNext = React.useCallback(() => {
     checkAnswer(undefined, {
       onSuccess: ({ isCorrect }) => {
+        setSelectedChoice(null) // reset selected choice for next questions
+
         if (isCorrect) {
           setStats((stats) => ({
             ...stats,
@@ -206,7 +208,7 @@ const MCQ = ({ game }: Props) => {
           variant="default"
           className="mt-2"
           size="lg"
-          disabled={isChecking || hasEnded}
+          disabled={selectedChoice === null || isChecking || hasEnded}
           onClick={() => {
             handleNext();
           }}
