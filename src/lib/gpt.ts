@@ -9,22 +9,28 @@ interface OutputFormat {
   [key: string]: string | string[] | OutputFormat;
 }
 
+export type GPTQuestionsRequest = Promise<
+  {
+    question: string;
+    answer: string;
+  }[]
+>;
+
+export type GPTTopicSumaryRequest = Promise<{
+  topicSumary: string;
+}>;
+
 export async function strict_output(
   system_prompt: string,
   user_prompt: string | string[],
   output_format: OutputFormat,
   default_category: string = "",
   output_value_only: boolean = false,
-  model: string = "gpt-3.5-turbo",
+  model: string = "gpt-4o-mini-2024-07-18",
   temperature: number = 1,
   num_tries: number = 3,
-  verbose: boolean = false
-): Promise<
-  {
-    question: string;
-    answer: string;
-  }[]
-> {
+  verbose: boolean = false,
+) {
   // if the user input is in a list, we also process the output as a list of json
   const list_input: boolean = Array.isArray(user_prompt);
   // if the output format contains dynamic elements of < or >, then add to the prompt to handle dynamic elements
@@ -37,7 +43,7 @@ export async function strict_output(
 
   for (let i = 0; i < num_tries; i++) {
     let output_format_prompt: string = `\nYou are to output the following in json format: ${JSON.stringify(
-      output_format
+      output_format,
     )}. \nDo not put quotation marks or escape character \\ in the output fields.`;
 
     if (list_output) {
@@ -76,7 +82,7 @@ export async function strict_output(
     if (verbose) {
       console.log(
         "System prompt:",
-        system_prompt + output_format_prompt + error_msg
+        system_prompt + output_format_prompt + error_msg,
       );
       console.log("\nUser prompt:", user_prompt);
       console.log("\nGPT response:", res);

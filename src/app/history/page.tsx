@@ -7,9 +7,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { LucideLayoutDashboard } from "lucide-react";
 
-type Props = {};
-
-const History = async (props: Props) => {
+const History = async () => {
   const session = await getAuthSession();
   if (!session?.user) {
     return redirect("/");
